@@ -20,14 +20,17 @@ type MintQueryParams = {
 
 const overlayId = "__crossmint-overlay__";
 
+const POPUP_WIDTH = 400;
+const POPUP_HEIGHT = 750;
+
 const getChromeVersion = () => {
     const raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
     return raw ? parseInt(raw[2]) : null;
 };
 
-function createPopupString() {
-    const left = window.innerWidth / 2 - 200;
-    const top = window.innerHeight / 2 - 375;
+function createPopupString(width: number, height: number) {
+    const top = window.outerHeight / 2 + window.screenY - height / 2;
+    const left = window.outerWidth / 2 + window.screenX - width / 2;
 
     // In newer versions of chrome (>99) you need to add the `popup=true` for the new window to actually open in a popup
     const chromeVersion = getChromeVersion();
@@ -127,7 +130,7 @@ export function crossmintModalService({
         const callbackUrl = encodeURIComponent(`${urlOrigin}/checkout/mint?${getMintQueryParams()}`);
         const url = `${urlOrigin}/signin?callbackUrl=${callbackUrl}`;
 
-        const pop = window.open(url, "popUpWindow", createPopupString());
+        const pop = window.open(url, "popUpWindow", createPopupString(POPUP_WIDTH, POPUP_HEIGHT));
         if (pop) {
             registerListeners(pop);
             if (showOverlay) {
